@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text to BR Minifier</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+
+    p {
+      color: #555;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 320px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: Consolas, Monaco, monospace;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lyric Minifier</h1>
+    <p>
+      Paste text below. This tool converts carriage returns and line breaks to
+      <code>&lt;br&gt;</code> and minifies spacing for use in certian templates.
+    </p>
+
+    <div class="buttons">
+      <button id="convertBtn">Convert</button>
+      <button id="copyBtn">Copy Output</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="inputText"><strong>Input</strong></label>
+        <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+      </div>
+      <div>
+        <label for="outputText"><strong>Output</strong></label>
+        <textarea id="outputText" readonly placeholder="Converted output will appear here..."></textarea>
+      </div>
+    </div>
+
+    <div class="note">
+      Example: line breaks become <code>&lt;br&gt;</code>, repeated spaces/tabs are reduced, and extra surrounding whitespace is removed.
+    </div>
+  </div>
+
+  <script>
+    function convertAndMinify(text) {
+      return text
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .map(line => line.replace(/[ \t]+/g, " ").trim())
+        .join("<br>")
+        .replace(/(?:<br>)+/g, "<br>")
+        .trim();
+    }
+
+    const input = document.getElementById("inputText");
+    const output = document.getElementById("outputText");
+    const convertBtn = document.getElementById("convertBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    convertBtn.addEventListener("click", () => {
+      output.value = convertAndMinify(input.value);
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(output.value);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyBtn.textContent = "Copy Output";
+        }, 1200);
+      } catch {
+        alert("Copy failed. Please copy manually.");
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      output.value = "";
+    });
+  </script>
+</body>
+</html>
